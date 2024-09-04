@@ -72,3 +72,10 @@ Plugins/**/Intermediate/*
 
 # Cache files for the editor to use
 DerivedDataCache/*
+MultiplayerChallenge/.vsconfig
+/MultiplayerChallenge/Binaries
+/MultiplayerChallenge/Build
+/MultiplayerChallenge/Intermediate
+/MultiplayerChallenge/Saved
+/MultiplayerChallenge/Plugins/MultiplayerSessions/Intermediate
+/MultiplayerChallenge/Plugins/MultiplayerSessions/Binaries
