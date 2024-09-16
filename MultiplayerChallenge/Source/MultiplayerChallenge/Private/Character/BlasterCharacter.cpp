@@ -1,10 +1,14 @@
 
 #include "Character/BlasterCharacter.h"
-#include "GameFramework/SpringArmComponent.h"
+
 #include "Camera/CameraComponent.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Components/WidgetComponent.h"
 #include "EnhancedInputComponent.h"
+
 #include "EnhancedInputSubsystems.h"
+
 #include "Engine/LocalPlayer.h"
 
 ABlasterCharacter::ABlasterCharacter()
@@ -20,8 +24,12 @@ ABlasterCharacter::ABlasterCharacter()
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false;
 
+	OverheadWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("OverheadWidget"));
+	OverheadWidget->SetupAttachment(GetRootComponent());
+
 	bUseControllerRotationYaw = false;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
+
 }
 
 void ABlasterCharacter::BeginPlay()
@@ -29,11 +37,18 @@ void ABlasterCharacter::BeginPlay()
 	Super::BeginPlay();
 }
 
-void ABlasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void ABlasterCharacter::SetupPlayerInputComponent(UInputComponent* PIC)
 {
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	Super::SetupPlayerInputComponent(PIC);
 
-	auto EIC = Cast<UEnhancedInputComponent>(PlayerInputComponent);
+	PIC->BindAxis("MoveForward", this, &ThisClass::MoveForward);
+	PIC->BindAxis("MoveSide", this, &ThisClass::MoveSide);
+	PIC->BindAxis("Turn", this, &ThisClass::Turn);
+	PIC->BindAxis("LookUp", this, &ThisClass::LookUp);
+
+	PIC->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
+
+	auto EIC = Cast<UEnhancedInputComponent>(PIC);
 
 	if (EIC)
 	{
@@ -67,7 +82,7 @@ void ABlasterCharacter::EnhancedInputMove(const FInputActionValue& Value)
 	}
 	if (MoveVector.Y > IgnoreThreshold && MoveVector.Y < -IgnoreThreshold)
 	{
-		MoveForward(MoveVector.Y);
+		MoveSide(MoveVector.Y);
 	}
 }
 
@@ -93,12 +108,17 @@ void ABlasterCharacter::MoveSide(float Input)
 
 void ABlasterCharacter::Turn(float Input)
 {
-	AddControllerYawInput(Input);
+	if (Input != 0.f)
+		AddControllerYawInput(Input);
 }
 
 void ABlasterCharacter::LookUp(float Input)
 {
-	AddControllerPitchInput(Input);
+	if (Input != 0.f)
+	{
+		AddControllerPitchInput(Input);
+		UE_LOG(LogTemp, Warning, TEXT("LookUp %f"), Input);
+	}
 }
 
 void ABlasterCharacter::Tick(float DeltaTime)

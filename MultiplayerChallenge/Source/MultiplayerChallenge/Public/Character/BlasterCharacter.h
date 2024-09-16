@@ -9,6 +9,7 @@ class USpringArmComponent;
 class UCameraComponent;
 class UInputAction;
 class UInputMappingContext;
+class UWidgetComponent;
 
 UCLASS()
 class MULTIPLAYERCHALLENGE_API ABlasterCharacter : public ACharacter
@@ -45,6 +46,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction>MovementInput;
+
+	UPROPERTY(EditAnywhere, Category = "UI")
+	TObjectPtr<UWidgetComponent>OverheadWidget;
 
 protected:
 
