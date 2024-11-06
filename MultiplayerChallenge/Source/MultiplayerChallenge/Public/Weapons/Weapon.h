@@ -28,6 +28,10 @@ public:
 	AWeapon();
 	virtual void Tick(float DeltaTime) override;
 
+	void ShowPickupWidget(bool bShowWidget);
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -39,13 +43,24 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
 	TObjectPtr<USphereComponent>AreaSphere = nullptr;
 
-	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
-	EWeaponState WeaponState = EWeaponState::EWS_Initial;
+	UPROPERTY(ReplicatedUsing = OnRep_WeaponState, VisibleAnywhere, Category = "Weapon Properties")
+	TEnumAsByte<EWeaponState> WeaponState = EWeaponState::EWS_Initial;
+
+	UFUNCTION()
+	void OnRep_WeaponState();
 
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
 	TObjectPtr<UWidgetComponent >PickupWidget;
 
 	UFUNCTION()
-	void OnSphereOverlap(UPrimitiveComponent OnComponentBeginOverlap, UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	void OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	void OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+public:
+	void SetWeaponState(EWeaponState _State);
+	FORCEINLINE USphereComponent* GetAreaSphere()const { return AreaSphere; }
+	FORCEINLINE USkeletalMeshComponent* GetWeaponMesh()const { return WeaponMesh; }
 
 };
