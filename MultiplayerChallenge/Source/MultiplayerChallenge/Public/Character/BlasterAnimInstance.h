@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
+#include "BlasterTypes/TurningInPlace.h"
 #include "BlasterAnimInstance.generated.h"
 
 class ABlasterCharacter;
@@ -56,6 +57,30 @@ private:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Aiming", meta = (AllowPrivateAccess = "true"))
 	FTransform LeftHandTransform;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Aiming", meta = (AllowPrivateAccess = "true"))
+	ETurningInPlace TurningInPlace;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Aiming", meta = (AllowPrivateAccess = "true"))
+	FRotator RightHandRotation;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Aiming", meta = (AllowPrivateAccess = "true"))
+	bool bIsLocallyControlled = false;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Aiming", meta = (AllowPrivateAccess = "true"))
+	bool bRotateRootBone = false;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Aiming", meta = (AllowPrivateAccess = "true"))
+	bool bElimmed = false;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Aiming", meta = (AllowPrivateAccess = "true"))
+	bool bUseFabric = false;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Aiming", meta = (AllowPrivateAccess = "true"))
+	bool bUseAimOffsets = false;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Aiming", meta = (AllowPrivateAccess = "true"))
+	bool bTransformRightHand = false;
 
 	TObjectPtr<AWeapon>EquippedWeapon;
 
