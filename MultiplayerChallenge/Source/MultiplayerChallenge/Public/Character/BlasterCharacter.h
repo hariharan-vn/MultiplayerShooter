@@ -232,6 +232,13 @@ public:
 
 	ECombatState GetCombatState()const;
 
+	UPROPERTY(Replicated)
+	bool bDisableGameplay = false;
+
+	FORCEINLINE UCombatComponent* GetCombat()const { return Combat; }
+
+	FORCEINLINE bool GetDisableGameplay()const { return bDisableGameplay; }
+
 protected:
 
 	void EnhancedInputMove(const FInputActionValue& Value);
@@ -243,4 +250,6 @@ protected:
 
 	//Poll for relevant classes and initialize for HUD
 	void PollInit();
+
+	void RotateInPlace(float DeltaTime);
 };

@@ -33,12 +33,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void FinishReloading();
 
+	void FireButtonPressed(bool bPressed);
+
 protected:
 	virtual void BeginPlay() override;
 
 	void SetAiming(bool bAimingStatus);
-
-	void FireButtonPressed(bool bPressed);
 
 	UFUNCTION(Server, Reliable)
 	void ServerSetAiming(bool bAimingStatus);
@@ -139,6 +139,9 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Combat | Weapon")
 	int32 StartingARAmmo = 30;
+
+	UPROPERTY(EditAnywhere, Category = "Combat | Weapon")
+	int32 StartingRocketAmmo = 0;
 
 	UPROPERTY(ReplicatedUsing = OnRep_CombatState)
 	ECombatState CombatState = ECombatState::ECS_Unoccupied;

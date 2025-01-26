@@ -45,7 +45,8 @@ void UBlasterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 	bUseFabric = BlasterCharacter->GetCombatState() != ECombatState::ECS_Reloading;
 
-	bUseAimOffsets = BlasterCharacter->GetCombatState() != ECombatState::ECS_Reloading;
+	bUseAimOffsets = BlasterCharacter->GetCombatState() != ECombatState::ECS_Reloading&& !BlasterCharacter->GetDisableGameplay();
+	bTransformRightHand = BlasterCharacter->GetCombatState() != ECombatState::ECS_Reloading&& !BlasterCharacter->GetDisableGameplay();
 
 	//Offset Yaw for Strafing
 	FRotator AimRotation = BlasterCharacter->GetBaseAimRotation();

@@ -74,6 +74,7 @@ void ABlasterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 
 	DOREPLIFETIME_CONDITION(ABlasterCharacter, OverlappingWeapon, COND_OwnerOnly);
 	DOREPLIFETIME(ABlasterCharacter, Health);
+	DOREPLIFETIME(ABlasterCharacter, bDisableGameplay);
 }
 
 void ABlasterCharacter::BeginPlay()
@@ -168,9 +169,11 @@ void ABlasterCharacter::MulticastElim_Implementation()
 	//Disable Character Movement
 	GetCharacterMovement()->DisableMovement();//stops movement 
 	GetCharacterMovement()->StopMovementImmediately();//stop mouse control
-	if (BlasterPlayerController)
+
+	bDisableGameplay = true;
+	if (Combat)
 	{
-		DisableInput(BlasterPlayerController);
+		Combat->FireButtonPressed(false);
 	}
 
 	//Disable Collision
@@ -208,6 +211,15 @@ void ABlasterCharacter::Destroyed()
 	if (ElimBotComponent)
 	{
 		ElimBotComponent->DestroyComponent();
+	}
+
+	auto BlasterGM = Cast<ABlasterGameMode>(UGameplayStatics::GetGameMode(this));
+	bool bMatchNotInProgress = BlasterGM && BlasterGM->GetMatchState() != MatchState::InProgress;
+
+	//Destroying weapons on transition levels
+	if (Combat && Combat->EquippedWeapon && bMatchNotInProgress)
+	{
+		Combat->EquippedWeapon->Destroy();
 	}
 }
 
@@ -323,6 +335,8 @@ void ABlasterCharacter::EnhancedInputMove(const FInputActionValue& Value)
 
 void ABlasterCharacter::MoveForward(float Input)
 {
+	if (bDisableGameplay)return;
+
 	if (Controller && Input != 0.f)
 	{
 		FRotator YawRotation(FRotator(0.f, Controller->GetControlRotation().Yaw, 0.f));
@@ -333,6 +347,8 @@ void ABlasterCharacter::MoveForward(float Input)
 
 void ABlasterCharacter::MoveSide(float Input)
 {
+	if (bDisableGameplay)return;
+
 	if (Controller && Input != 0.f)
 	{
 		FRotator YawRotation(FRotator(0.f, Controller->GetControlRotation().Yaw, 0.f));
@@ -358,6 +374,8 @@ void ABlasterCharacter::LookUp(float Input)
 
 void ABlasterCharacter::EquipButtonPressed()
 {
+	if (bDisableGameplay)return;
+
 	if (Combat)
 	{
 		if (HasAuthority())
@@ -381,6 +399,8 @@ void ABlasterCharacter::ServerEquipButtonPressed_Implementation()
 
 void ABlasterCharacter::CrouchButtonPressed()
 {
+	if (bDisableGameplay)return;
+
 	if (bIsCrouched)
 	{
 		UnCrouch();
@@ -409,6 +429,8 @@ void ABlasterCharacter::AimButtonReleased()
 
 void ABlasterCharacter::FireButtonPressed()
 {
+	if (bDisableGameplay)return;
+
 	if (!Combat)return;
 
 	Combat->FireButtonPressed(true);
@@ -416,6 +438,8 @@ void ABlasterCharacter::FireButtonPressed()
 
 void ABlasterCharacter::FireButtonReleased()
 {
+	if (bDisableGameplay)return;
+
 	if (!Combat)return;
 
 	Combat->FireButtonPressed(false);
@@ -423,6 +447,8 @@ void ABlasterCharacter::FireButtonReleased()
 
 void ABlasterCharacter::ReloadButtonPressed()
 {
+	if (bDisableGameplay)return;
+
 	if (!Combat)return;
 
 	Combat->Reload();
@@ -474,6 +500,9 @@ void ABlasterCharacter::PlayReloadMontage()
 		case EWeaponType::EWT_AssaultRifle:
 			SectionName = "Rifle";
 			break;
+		case EWeaponType::EWT_RocketLauncher:
+			SectionName = "Rifle";
+			break;
 		}
 
 		AnimInst->Montage_JumpToSection(SectionName);
@@ -504,21 +533,7 @@ void ABlasterCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (GetLocalRole() > ENetRole::ROLE_SimulatedProxy && IsLocallyControlled())
-	{
-		CalculateAimOffset(DeltaTime);
-	}
-	else
-	{
-		TimeSinceLastReplication += DeltaTime;
-		float ReplicationThresholdTimer = 0.25f;
-		//waiting to see if it called for 0.25 sec if not calling it manually as turn in place animation need to be synced 
-		if (TimeSinceLastReplication > ReplicationThresholdTimer)
-		{
-			OnRep_ReplicatedMovement();
-		}
-		CalculateAO_Pitch();
-	}
+	RotateInPlace(DeltaTime);
 
 	HideCameraIfCharacterClose();
 
@@ -597,6 +612,8 @@ void ABlasterCharacter::HideCameraIfCharacterClose()
 
 void ABlasterCharacter::Jump()
 {
+	if (bDisableGameplay)return;
+
 	if (bIsCrouched)
 	{
 		UnCrouch();
@@ -695,5 +712,31 @@ void ABlasterCharacter::PollInit()
 			BlasterPlayerState->AddToScore(0.f);
 			BlasterPlayerState->AddToDefeats(0);
 		}
+	}
+}
+
+void ABlasterCharacter::RotateInPlace(float DeltaTime)
+{
+	if (bDisableGameplay)
+	{
+		bUseControllerRotationYaw = false;
+		TurningInPlace = ETurningInPlace::ETIP_NotTurning;
+		return;
+	}
+
+	if (GetLocalRole() > ENetRole::ROLE_SimulatedProxy && IsLocallyControlled())
+	{
+		CalculateAimOffset(DeltaTime);
+	}
+	else
+	{
+		TimeSinceLastReplication += DeltaTime;
+		float ReplicationThresholdTimer = 0.25f;
+		//waiting to see if it called for 0.25 sec if not calling it manually as turn in place animation need to be synced 
+		if (TimeSinceLastReplication > ReplicationThresholdTimer)
+		{
+			OnRep_ReplicatedMovement();
+		}
+		CalculateAO_Pitch();
 	}
 }

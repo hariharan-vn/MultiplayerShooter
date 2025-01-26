@@ -8,6 +8,7 @@
 
 class UTexture2D;
 class UCharacterOverlay;
+class UAnnouncement;
 
 USTRUCT(BlueprintType)
 struct FHUDPackage
@@ -36,17 +37,28 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Player Stats")
 	TSubclassOf<UCharacterOverlay>CharacterOverlayClass;
 
+	UPROPERTY()
 	TObjectPtr<UCharacterOverlay>CharacterOverlay;
+
+	void AddCharacterOverlay();
+
+
+	UPROPERTY(EditAnywhere, Category = "Player Stats")
+	TSubclassOf<UAnnouncement>AnnouncementClass;
+
+	UPROPERTY()
+	TObjectPtr<UAnnouncement>Announcement;
+
+	void AddAnnouncement();
 
 	FORCEINLINE void SetHUDPackage(const FHUDPackage& Package) { HUDPackage = Package; }
 
 	UPROPERTY(EditAnywhere, Category = "HUD")
 	float CrossHairSpreadMax = 16.f;
 
+
 protected:
 	virtual void BeginPlay()override;
-
-	void AddCharacterOverlay();
 
 private:
 	FHUDPackage HUDPackage;

@@ -8,7 +8,7 @@ public class MultiplayerChallenge : ModuleRules
     {
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "MultiplayerSessions" });
+        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "MultiplayerSessions", "Niagara" });
 
         //PublicIncludePaths.Add(Path.Combine(ModuleDirectory, "Plugins/MultiplayerSessions"));
     }

@@ -33,22 +33,24 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Ammo Properties")
 	float Damage = 20.f;
 
-private:
+	UPROPERTY(EditAnywhere, Category = "Ammo Properties", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UParticleSystem>ImpactParticles;
+
+	UPROPERTY(EditAnywhere, Category = "Ammo Properties", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USoundCue>ImpactSound;
+
 	UPROPERTY(EditAnywhere, Category = "Ammo Collider", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UBoxComponent>CollisionBox;
 
 	UPROPERTY(VisibleAnywhere, Category = "Ammo Properties", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UProjectileMovementComponent>ProjectileMovementComponent;
 
+private:
+	
 	UPROPERTY(EditAnywhere, Category = "Ammo Properties", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UParticleSystem>Tracer;
 
 	TObjectPtr<UParticleSystemComponent>TracerComponent;
 
-	UPROPERTY(EditAnywhere, Category = "Ammo Properties", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UParticleSystem>ImpactParticles;
-
-	UPROPERTY(EditAnywhere, Category = "Ammo Properties", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<USoundCue>ImpactSound;
 
 };
