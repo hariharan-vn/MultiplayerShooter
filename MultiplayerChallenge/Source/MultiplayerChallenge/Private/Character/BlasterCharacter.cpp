@@ -503,6 +503,18 @@ void ABlasterCharacter::PlayReloadMontage()
 		case EWeaponType::EWT_RocketLauncher:
 			SectionName = "Rifle";
 			break;
+		case EWeaponType::EWT_Pistol:
+			SectionName = "Rifle";
+			break;
+		case EWeaponType::EWT_SubmachineGun:
+			SectionName = "Rifle";
+			break;
+		case EWeaponType::EWT_ShotGun:
+			SectionName = "Rifle";
+			break;
+		case EWeaponType::EWT_SniperRifle:
+			SectionName = "Rifle";
+			break;
 		}
 
 		AnimInst->Montage_JumpToSection(SectionName);
